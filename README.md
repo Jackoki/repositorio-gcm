@@ -8,8 +8,8 @@ O banco de dados pode ser configurado localmente ou utilizando o Docker.
 
 ## Requisitos para compilação
 
-Para compilar o projeto, é necessário ter o Postgres instalado na sua máquina, tendo um usuário chamado postgres com a senha postgres e um database chamado localdb
-Para realizar a instalação dos arquivos, o usuário precisará ter o Java sdk-20 e o Maven instalado na máquina, que no Windows é instalado seguindo esse seguinte tutorial: 
+* Para compilar o projeto, é necessário ter o Postgres instalado na sua máquina, tendo um usuário chamado postgres com a senha postgres e um database chamado localdb
+* Para realizar a instalação dos arquivos, o usuário precisará ter o Java sdk-20 e o Maven instalado na máquina, que no Windows é instalado seguindo esse seguinte tutorial: 
 https://www.youtube.com/watch?v=-ucX5w8Zm8s
 
 ### Opção 1: Configuração com Docker
@@ -85,13 +85,13 @@ Após iniciado, o projeto estará acessível em [http://localhost:8080](http://l
 
 ## Configuração em Produção
 
-Para executar em produção, é necessário configurar as seguintes variáveis de ambiente:
+Para executar em produção, é necessário chamar as seguintes variáveis de ambiente no seu terminal/CMD:
 
 * `DATABASE_URL`: URL de conexão com o banco de dados (ex.: `jdbc:postgresql://127.0.0.1:5432/localdb`)
 * `DATABASE_USERNAME`: Nome do usuário do banco de dados (ex.: `postgres`)
 * `DATABASE_PASSWORD`: Senha do usuário do banco de dados (ex.: `postgres`)
 
-### Opção 1: Executar Diretamente
+### Opção 1: Executar Diretamente no Terminal
 
 Use o Payara Micro ou outro servidor Java EE compatível:
 
