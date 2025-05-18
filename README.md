@@ -8,8 +8,8 @@ O banco de dados pode ser configurado localmente ou utilizando o Docker.
 
 ## Requisitos para compilação
 
-Para compilar o projeto, é necessário ter o Postgres instalado na sua máquina, tendo um usuário chamado postgres com a senha postgres e um database chamado localdb
-Para realizar a instalação dos arquivos, o usuário precisará ter o Java sdk-20 e o Maven instalado na máquina, que no Windows é instalado seguindo esse seguinte tutorial: 
+* Para compilar o projeto, é necessário ter o Postgres instalado na sua máquina, tendo um usuário chamado postgres com a senha postgres e um database chamado localdb
+* Para realizar a instalação dos arquivos, o usuário precisará ter o Java sdk-20 e o Maven instalado na máquina, que no Windows é instalado seguindo esse seguinte tutorial: 
 https://www.youtube.com/watch?v=-ucX5w8Zm8s
 
 ### Opção 1: Configuração com Docker
