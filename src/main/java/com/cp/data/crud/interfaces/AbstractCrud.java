@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.cp.data.crud.interfaces;
 
 import java.util.Collections;
@@ -10,69 +6,66 @@ import com.cp.util.AppLog;
 
 import jakarta.persistence.EntityManager;
 
-/**
- *
- * @author utfpr
- */
 public abstract class AbstractCrud<T> {
-    
+
     private Class<T> entityClass;
 
     protected AbstractCrud(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
-
-
     protected abstract EntityManager getEntityManager();
 
+    protected abstract void close();
 
-    protected abstract  void close();
+    // Interface funcional para operações com transação
+    @FunctionalInterface
+    private interface TransactionalOperation {
+        void execute(EntityManager em) throws Exception;
+    }
 
+    private Exception executeTransaction(TransactionalOperation operation, String messageReturn) {
+        EntityManager em = getEntityManager();
 
-
-    public Exception persist(T entity) {
         try {
-            System.out.println("iniciando ########");
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(entity);
-            System.out.println("foi o persist $$$$$$");
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            AppLog.getInstance().info("Registro inserido com sucesso pela classe: " + this.getClass().getName());
+            em.getTransaction().begin();
+            operation.execute(em);
+            em.flush();
+            em.getTransaction().commit();
+            
+            AppLog.getInstance().info(messageReturn);
             return null;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            AppLog.getInstance().warn("Erro ao inserir no banco de dados: " + this.getClass().getName() + "==>" + e.getMessage());
+        } 
+        
+        catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+
+            AppLog.getInstance().warn("Erro no banco de dados: " + this.getClass().getName() + " ==> " + e.getMessage());
             return e;
         }
+    }
+
+    public Exception persist(T entity) {
+        return executeTransaction(
+            em -> em.persist(entity),
+            "Inserção de dados feito com sucesso"
+        );
     }
 
     public Exception merge(T entity) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(entity);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            AppLog.getInstance().info("Registro alterado com sucesso pela classe: " + this.getClass().getName());
-            return null;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return e;
-        }
+        return executeTransaction(
+            em -> em.merge(entity),
+            "Alteração de dados feito com sucesso"
+        );
     }
 
     public Exception remove(T entity) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(getEntityManager().merge(entity));
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            AppLog.getInstance().info("Registro removido com sucesso pela classe: " + this.getClass().getName());
-            return null;
-        } catch (Exception e) {
-            return e;
-        }
+        return executeTransaction(
+            em -> em.remove(em.merge(entity)),
+            "Remoção de dados feito com sucesso"
+        );
     }
 
     public T find(Object id) {
@@ -81,32 +74,40 @@ public abstract class AbstractCrud<T> {
 
     public List<T> getAll() {
         try {
-            jakarta.persistence.criteria.CriteriaQuery cq;
-            cq = getEntityManager().getCriteriaBuilder().createQuery();
+            EntityManager em = getEntityManager();
+            var cb = em.getCriteriaBuilder();
+            var cq = cb.createQuery(entityClass);
             cq.select(cq.from(entityClass));
-            return getEntityManager().createQuery(cq).getResultList();
+            return em.createQuery(cq).getResultList();
         } catch (Exception e) {
+            AppLog.getInstance().warn("Erro ao buscar todos registros: " + e.getMessage());
             return Collections.emptyList();
         }
-
     }
 
     public List<T> findRange(int[] range) {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
-        q.setMaxResults(range[1] - range[0] + 1);
-        q.setFirstResult(range[0]);
-        return Collections.emptyList();
+        try {
+            EntityManager em = getEntityManager();
+            var cb = em.getCriteriaBuilder();
+            var cq = cb.createQuery(entityClass);
+            cq.select(cq.from(entityClass));
+            var q = em.createQuery(cq);
+            q.setFirstResult(range[0]);
+            q.setMaxResults(range[1] - range[0] + 1);
+            return q.getResultList();
+        } catch (Exception e) {
+            AppLog.getInstance().warn("Erro ao buscar intervalo: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     public int count() {
-        jakarta.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        jakarta.persistence.criteria.Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        jakarta.persistence.Query q = getEntityManager().createQuery(cq);
+        EntityManager em = getEntityManager();
+        var cb = em.getCriteriaBuilder();
+        var cq = cb.createQuery(Long.class);
+        var rt = cq.from(entityClass);
+        cq.select(cb.count(rt));
+        var q = em.createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
     }
-
-
 }

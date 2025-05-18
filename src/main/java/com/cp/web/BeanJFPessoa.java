@@ -36,24 +36,37 @@ public class BeanJFPessoa {
 
     @EJB
     BeanCrudCidade beanCidade;
-    
-    public void add(){
-        if(id==0){
-            FacesContext.getCurrentInstance().addMessage("ERRO",new FacesMessage("Erro: Código não pode ser zero."));
-          //  return "";
+            
+    public void add() {
+        if (!validate()) return;
+
+        Pessoa p = createPerson();
+        beanPessoa.persist(p);
+        beanPessoa.merge(p);
+    }
+
+    private boolean validate() {
+        if(id == 0){
+            FacesContext.getCurrentInstance().addMessage("ERRO", new FacesMessage("Erro: Código não pode ser zero."));
+            return false;
         }
-        if(beanPessoa.find(id)!=null){
-            FacesContext.getCurrentInstance().addMessage("ERRO",new FacesMessage("Erro: Código existente."));
-            //return "";
+
+        if(beanPessoa.find(id) != null){
+            FacesContext.getCurrentInstance().addMessage("ERRO", new FacesMessage("Erro: Código existente."));
+            return false;
         }
+
+        return true;
+    }
+
+    private Pessoa createPerson() {
         Pessoa p = new Pessoa();
         p.setNome(nome);
         p.setId(id);
-        beanPessoa.persist(p);
         p.setCidade(beanCidade.find(cidade));
-        beanPessoa.merge(p);
-       // return "";
+        return p;
     }
+
     
     public List<Pessoa> getAll(){
         return beanPessoa.getAll();

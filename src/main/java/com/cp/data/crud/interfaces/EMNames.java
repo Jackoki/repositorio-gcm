@@ -31,7 +31,9 @@ public class EMNames implements Serializable {
             properties.put("jakarta.persistence.jdbc.user", "postgres");
             properties.put("jakarta.persistence.jdbc.driver", "org.postgresql.Driver");
             properties.put("jakarta.persistence.jdbc.password", "postgres");
-        } else { //se a variavel de ambiente foi criada, indica que o projeto está alocado em producao
+        } 
+        
+        else { //se a variavel de ambiente foi criada, indica que o projeto está alocado em producao
             AppLog.getInstance().info("#### Configurar banco de dados em producao #### ");
             String jdbc_database_username = System.getenv("DATABASE_USERNAME");
             String jdbc_database_password = System.getenv("DATABASE_PASSWORD");
@@ -42,14 +44,19 @@ public class EMNames implements Serializable {
             properties.put("jakarta.persistence.jdbc.password", jdbc_database_password);
             System.out.println("XXXXXXXXXX ===== fim config");
             properties.put("jakarta.persistence.jdbc.url", BD_producao );
-            try {
-                System.out.println("Carregar driver");
-                Class.forName("org.postgresql.Driver");
-            }catch(Exception e){
-                System.out.println("ERRO #############################");
-            }
+            
+            
+        try {
+            System.out.println("Carregar driver");
+            Class.forName("org.postgresql.Driver");
+        }
+        
+        catch(Exception e){
+             System.out.println("ERRO #############################");
+        }
 
-           }
+        }
+        
         return properties;
     }
 }

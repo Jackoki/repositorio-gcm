@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f9fc;
+    margin: 20px;
+}
+.container {
+    max-width: 700px;
+    background: #fff;
+    padding: 25px 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+h1, h2 {
+    color: #2c3e50;
+    text-align: center;
+}
+form {
+    margin-bottom: 25px;
+}
+label {
+    display: inline-block;
+    width: 80px;
+    font-weight: bold;
+    color: #34495e;
+}
+input[type="text"], select {
+    width: 200px;
+    padding: 6px 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+h\:commandButton {
+    margin-right: 10px;
+}
+.buttons h\:commandButton {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+.buttons h\:commandButton:hover {
+    background-color: #2980b9;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+th {
+    background-color: #3498db;
+    color: white;
+}
+h\:graphicImage {
+    float: right;
+    margin-bottom: 10px;
+}
+.wadl-link {
+    text-align: center;
+    margin-top: 30px;
+}
+.wadl-link a {
+    color: #3498db;
+    font-weight: bold;
+    text-decoration: none;
+}
+.wadl-link a:hover {
+    text-decoration: underline;
+}
