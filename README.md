@@ -91,7 +91,7 @@ Para executar em produção, é necessário chamar as seguintes variáveis de am
 * `DATABASE_USERNAME`: Nome do usuário do banco de dados (ex.: `postgres`)
 * `DATABASE_PASSWORD`: Senha do usuário do banco de dados (ex.: `postgres`)
 
-### Opção 1: Executar Diretamente
+### Opção 1: Executar Diretamente no Terminal
 
 Use o Payara Micro ou outro servidor Java EE compatível:
 
