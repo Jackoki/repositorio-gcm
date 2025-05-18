@@ -1,72 +1,149 @@
-#Cadastro de Clientes - Pessoas
+# Cadastro de Clientes - Pessoas
 
-Para executar este app você deve configurar o banco de dados PostgreSQL. Este pode ser configurado localmente ou por meio de docker.
-Caso opte por docker, execute o comando:
+Este guia fornece as instruções necessárias para configurar e executar o aplicativo de Cadastro de Clientes.
 
-####################################################
+## Configuração do Banco de Dados PostgreSQL
 
-docker run -it  --rm   --name myPostgresDb    -p 5432:5432     -e POSTGRES_USER=postgres     -e POSTGRES_PASSWORD=postgres     -e POSTGRES_DB=localdb   -d  postgres
+O banco de dados pode ser configurado localmente ou utilizando o Docker.
 
-####################################################
+## Requisitos para compilação
 
-Para executar o projeto, verifique se o arquivo mvnw é executável, caso não seja, voce deve executar primeiro `chmod +x mvnw` (linux).
+Para compilar o projeto, é necessário ter o Postgres instalado na sua máquina, tendo um usuário chamado postgres com a senha postgres e um database chamado localdb
+Para realizar a instalação dos arquivos, o usuário precisará ter o Java sdk-20 e o Maven instalado na máquina, que no Windows é instalado seguindo esse seguinte tutorial: 
+https://www.youtube.com/watch?v=-ucX5w8Zm8s
 
+### Opção 1: Configuração com Docker
 
-############### No linux utilize ################
+Execute o seguinte comando para iniciar um contêiner Docker com PostgreSQL:
 
+```bash
+docker run -it --rm --name myPostgresDb -p 5432:5432 \
+    -e POSTGRES_USER=postgres \
+    -e POSTGRES_PASSWORD=postgres \
+    -e POSTGRES_DB=localdb \
+    -d postgres
+```
+
+### Opção 2: Configuração Local
+
+Se preferir configurar o PostgreSQL localmente, crie um banco de dados chamado `localdb` e configure as credenciais de usuário como `postgres`/`postgres`.
+
+## Executando o Projeto
+
+Antes de executar o projeto, certifique-se de que:
+
+* O arquivo `mvnw` é executável (no Linux).
+* A variável de ambiente `JAVA_HOME` está configurada corretamente.
+
+### Verificar Executável do Maven Wrapper (Linux)
+
+Se necessário, torne o arquivo `mvnw` executável:
+
+```bash
+chmod +x mvnw
+```
+
+### Configurar `JAVA_HOME`
+
+Identifique o caminho onde a JDK está instalada e configure a variável de ambiente:
+
+```cmd
+SET JAVA_HOME="C:\Program-Files\Java\jdk-20"
+```
+
+### Comandos para Execução
+
+#### No Linux:
+
+Para compilar e iniciar o projeto:
+
+```bash
 ./mvnw clean package payara-micro:start
+```
 
-#################################################
+Para evitar a execução dos testes:
 
-Para nao executar testes, utilize: ./mvnw clean package -DskipTests=true
+```bash
+./mvnw clean package -DskipTests=true
+```
 
-############### No windos utilize ################
+#### No Windows:
 
+Para compilar e iniciar o projeto:
+
+```cmd
 mvnw.cmd clean package payara-micro:start
+```
 
-#################################################
+Para evitar a execução dos testes:
 
+```cmd
+mvnw.cmd clean package -DskipTests=true
+```
 
-Talvez seja necessário configurar a variável JAVA_HOME. Para isso, verifique onde sua jdk está instalada e informe a variável utilizando o path resumido (dir /x). Exemplo:
+Após iniciado, o projeto estará acessível em [http://localhost:8080](http://localhost:8080).
 
-SET  JAVA_HOME="C:\Progra~1\Java\jdk-20"
+## Configuração em Produção
 
-Após iniciado, voce poderá acessar o projeto em http://localhost:8080.
+Para executar em produção, é necessário configurar as seguintes variáveis de ambiente:
 
-===========  EM PRODUCAO ======
-Para executar em producao voce devera configurar as variaveis de ambiente: DATABASE_URL, DATABASE_USERNAME e DATABASE_PASSWORD
+* `DATABASE_URL`: URL de conexão com o banco de dados (ex.: `jdbc:postgresql://127.0.0.1:5432/localdb`)
+* `DATABASE_USERNAME`: Nome do usuário do banco de dados (ex.: `postgres`)
+* `DATABASE_PASSWORD`: Senha do usuário do banco de dados (ex.: `postgres`)
 
-Exemplos:
-DATABASE_URL="jdbc:postgresql://127.0.0.1:5432/localdb" 
-DATABASE_USERNAME="postgres" -
-DATABASE_PASSWORD="postgres"
+### Opção 1: Executar Diretamente
 
-Há duas maneiras de alocar em producao (1 executar arquivo.jar e 2 gerar container):
-1. Executar diretamente o payara-micro ou outro ee server compatível
+Use o Payara Micro ou outro servidor Java EE compatível:
 
-%> java -jar <payara-micro> Cadastro-Pessoas.war
+```bash
+java -jar <payara-micro> Cadastro-Pessoas.war
+```
 
-O arquivo .war encontra-se dentro da pasta target.
+O arquivo `.war` está localizado no diretório `target` após a compilação.
 
-------------- -------- -------------- ------------- ------------- ------------- -------------
+### Opção 2: Executar com Docker
 
-2. Entregar o projeto via Docker. Para construir a imagem Docker, execute os seguintes comandos no diretório onde este arquivo reside:
+Construa a imagem Docker e execute o contêiner:
 
-#################################################
+1. Construa a imagem Docker:
 
-./mvnw clean package 
+   ```bash
+   ./mvnw clean package
+   docker build -t cadpessoas:v1 .
+   ```
 
-docker build -t cadpessoas:v1 .
+2. Execute o contêiner com as variáveis de ambiente configuradas:
 
-Para rodar a imagem e configurar as variaveis de ambiente, utilize o comando 
-
-docker run -it --rm -e DATABASE_URL="jdbc:postgresql://<url do banco de dados>" -e DATABASE_USERNAME="<nome do usuario>" -e DATABASE_PASSWORD="<senha do usuario>" -p 8080:8080 cadpessoas:v1
+   ```bash
+   docker run -it --rm \
+       -e DATABASE_URL="jdbc:postgresql://<url do banco de dados>" \
+       -e DATABASE_USERNAME="<nome do usuario>" \
+       -e DATABASE_PASSWORD="<senha do usuario>" \
+       -p 8080:8080 cadpessoas:v1
+   ```
 
 Exemplo de comando completo:
-docker run -it --rm -e DATABASE_URL="jdbc:postgresql://192.168.0.110:5432/localdb" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="postgres" -p 8080:8080 cadpessoas:v1
 
+```bash
+docker run -it --rm \
+    -e DATABASE_URL="jdbc:postgresql://192.168.0.110:5432/localdb" \
+    -e DATABASE_USERNAME="postgres" \
+    -e DATABASE_PASSWORD="postgres" \
+    -p 8080:8080 cadpessoas:v1
+```
 
-Assim que a execução começar, você poderá acessar o projeto em http://localhost:8080/Cadastro-Pessoas
+Após iniciado, o projeto estará acessível em [http://localhost:8080/Cadastro-Pessoas](http://localhost:8080/Cadastro-Pessoas).
 
-Exemplo de configuração para o bd em produção:
-docker run -it  --rm   --name ProductPostgresDb    -p 5432:5432     -e POSTGRES_USER=postgres     -e POSTGRES_PASSWORD=sudodb     -e POSTGRES_DB=customerdb   -e PGDATA=/var/lib/postgresql/data/pgdata -v C:/Users/UTFPR/Downloads/dados:/var/lib/postgresql/data -d postgres
+## Exemplo de Configuração para Produção
+
+Para configurar o banco de dados em produção com Docker:
+
+```bash
+docker run -it --rm --name ProductPostgresDb -p 5432:5432 \
+    -e POSTGRES_USER=postgres \
+    -e POSTGRES_PASSWORD=sudodb \
+    -e POSTGRES_DB=customerdb \
+    -e PGDATA=/var/lib/postgresql/data/pgdata \
+    -v C:/Users/UTFPR/Downloads/dados:/var/lib/postgresql/data \
+    -d postgres
+```

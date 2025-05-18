@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<server description="new server">
+<server description="Servidor Cadastro Pessoas">
+    <!-- Ativando as features necessárias -->
     <featureManager>
-         <feature>jakartaee-10.0</feature>
+        <feature>jakartaee-10.0</feature>
+        <feature>jdbc-4.3</feature>
     </featureManager>
+
+    <!-- Configuração do endpoint HTTP -->
     <httpEndpoint id="defaultHttpEndpoint" httpPort="8080" httpsPort="9443"/>
-	<accessLogging filepath="${server.output.dir}/logs/http_defaultEndpoint_access.log"
-	                  logFormat='%h %i %u %t "%r" %s %b %D %{R}W' />
+
+    <!-- Configuração de logs -->
+    <accessLogging filepath="${server.output.dir}/logs/http_defaultEndpoint_access.log"
+                   logFormat='%h %i %u %t "%r" %s %b %D %{R}W'/>
+
+    <!-- Segurança básica -->
     <quickStartSecurity userName="duke" userPassword="dukeduke"/>
+
+    <!-- Configuração de Conexão com o Banco de Dados -->
+    <dataSource id="PostgresDS" jndiName="jdbc/PostgresDS">
+        <jdbcDriver libraryRef="PostgresLib"/>
+        <properties>
+            <databaseName>localdb</databaseName>
+            <serverName>localhost</serverName>
+            <portNumber>5432</portNumber>
+            <user>postgres</user>
+            <password>postgres</password>
+        </properties>
+    </dataSource>
+
+    <!-- Biblioteca do driver PostgreSQL -->
+    <library id="PostgresLib">
+        <file path="path/para/o/postgresql-42.6.0.jar"/>
+    </library>
 </server>
