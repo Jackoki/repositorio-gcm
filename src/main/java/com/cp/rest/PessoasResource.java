@@ -11,48 +11,42 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("pessoas")
 @Stateless
 public class PessoasResource {
 
+    @EJB
+    private BeanCrudPessoa beanCrudPessoa;
 
-	@EJB
-	BeanCrudPessoa beanCrudPessoa;
+    @EJB
+    private BeanCrudCidade beanCrudCidade;
 
-	@EJB
-	BeanCrudCidade beanCrudCidade;
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<JsonPessoa> getAll() {
+        return beanCrudPessoa.getAll().stream()
+                .map(pessoa -> new JsonPessoa(
+                        pessoa.getId(),
+                        pessoa.getNome(),
+                        pessoa.getCidade() != null 
+                                ? new JsonCidade(pessoa.getCidade().getId(), pessoa.getCidade().getNome()) 
+                                : null))
+                .collect(Collectors.toList());
+    }
 
-	@GET
-	@Path("all")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public List<JsonPessoa> getAll(){
-		ArrayList<JsonPessoa> lpessoa = new ArrayList<>();
-		for(Pessoa p : beanCrudPessoa.getAll()){
-			JsonCidade Cid=null;
-			if(p.getCidade()!=null){
-				Cid = new JsonCidade(p.getCidade().getId(),p.getCidade().getNome());
-			}
-			lpessoa.add(new JsonPessoa(p.getId(),p.getNome(),Cid));
-		}
-		return lpessoa;
-	}
+    @GET
+    @Path("cid")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<JsonCidade> getCids() {
+        return beanCrudCidade.getAll().stream()
+                .map(cidade -> new JsonCidade(cidade.getId(), cidade.getNome()))
+                .collect(Collectors.toList());
+    }
 
-	@GET
-	@Path("cid")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public ArrayList<JsonCidade> getCids(){
-		ArrayList<JsonCidade> cidadel = new ArrayList<>();
-		for(Cidade cid:beanCrudCidade.getAll()){
-			cidadel.add(new JsonCidade(cid.getId(),cid.getNome()));
-		}
-		return cidadel;
-	}
-
-	public record JsonCidade(int id, String nome){}
-	public record JsonPessoa(int id, String nome, JsonCidade cidade){}
-
+    public record JsonCidade(int id, String nome) {}
+    public record JsonPessoa(int id, String nome, JsonCidade cidade) {}
 }
