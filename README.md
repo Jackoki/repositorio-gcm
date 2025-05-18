@@ -85,7 +85,7 @@ Após iniciado, o projeto estará acessível em [http://localhost:8080](http://l
 
 ## Configuração em Produção
 
-Para executar em produção, é necessário configurar as seguintes variáveis de ambiente:
+Para executar em produção, é necessário chamar as seguintes variáveis de ambiente no seu terminal/CMD:
 
 * `DATABASE_URL`: URL de conexão com o banco de dados (ex.: `jdbc:postgresql://127.0.0.1:5432/localdb`)
 * `DATABASE_USERNAME`: Nome do usuário do banco de dados (ex.: `postgres`)
