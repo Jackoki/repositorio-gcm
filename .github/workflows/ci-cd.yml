@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Ou a branch que deseja usar
+      - master  # Ou a branch que deseja usar
 
 jobs:
   build:
